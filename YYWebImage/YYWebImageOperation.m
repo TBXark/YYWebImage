@@ -336,7 +336,7 @@ static void URLInBlackListAdd(NSURL *url) {
                     if (!self || [self isCancelled]) return;
                     UIImage *image = [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk];
                     if (image) {
-                        [self.cache setImage:image imageData:nil forKey:self.cacheKey withType:YYImageCacheTypeMemory containAlpha:_options & YYWebImageOptionForceCacheJPEG];
+                        [self.cache setImage:image imageData:nil forKey:self.cacheKey withType:YYImageCacheTypeMemory containAlpha:!(_options & YYWebImageOptionForceCacheJPEG)];
                         [self performSelector:@selector(_didReceiveImageFromDiskCache:) onThread:[self.class _networkThread] withObject:image waitUntilDone:NO];
                     } else {
                         [self performSelector:@selector(_startRequest:) onThread:[self.class _networkThread] withObject:nil waitUntilDone:NO];
@@ -423,7 +423,7 @@ static void URLInBlackListAdd(NSURL *url) {
                 if (image || (_options & YYWebImageOptionRefreshImageCache)) {
                     NSData *data = _data;
                     dispatch_async([YYWebImageOperation _imageQueue], ^{
-                        [_cache setImage:image imageData:data forKey:_cacheKey withType:YYImageCacheTypeAll containAlpha:_options & YYWebImageOptionForceCacheJPEG];
+                        [_cache setImage:image imageData:data forKey:_cacheKey withType:YYImageCacheTypeAll containAlpha:!(_options & YYWebImageOptionForceCacheJPEG)];
                     });
                 }
             }
