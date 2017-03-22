@@ -2794,7 +2794,7 @@ CGImageRef YYCGImageCreateWithWebPData(CFDataRef webpData,
 
 - (void)yy_saveToAlbumWithCompletionBlock:(void(^)(NSURL *assetURL, NSError *error))completionBlock {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *data = [self _yy_dataRepresentationForSystem:YES];
+        NSData *data = [self _yy_dataRepresentationForSystem:YES containerAlpha:YES];
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
         [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error){
             if (!completionBlock) return;
@@ -2809,12 +2809,12 @@ CGImageRef YYCGImageCreateWithWebPData(CFDataRef webpData,
     });
 }
 
-- (NSData *)yy_imageDataRepresentation {
-    return [self _yy_dataRepresentationForSystem:NO];
+- (NSData *)yy_imageDataRepresentation:(BOOL)containAlpha {
+    return [self _yy_dataRepresentationForSystem:NO containerAlpha:containAlpha];
 }
 
 /// @param forSystem YES: used for system album (PNG/JPEG/GIF), NO: used for YYImage (PNG/JPEG/GIF/WebP)
-- (NSData *)_yy_dataRepresentationForSystem:(BOOL)forSystem {
+- (NSData *)_yy_dataRepresentationForSystem:(BOOL)forSystem containerAlpha:(BOOL)containAlpha {
     NSData *data = nil;
     if ([self isKindOfClass:[YYImage class]]) {
         YYImage *image = (id)self;
@@ -2841,6 +2841,7 @@ CGImageRef YYCGImageCreateWithWebPData(CFDataRef webpData,
                 alphaInfo == kCGImageAlphaFirst) {
                 hasAlpha = YES;
             }
+            hasAlpha = containAlpha || hasAlpha;
             if (self.imageOrientation != UIImageOrientationUp) {
                 CGImageRef rotated = YYCGImageCreateCopyWithOrientation(imageRef, self.imageOrientation, bitmapInfo | alphaInfo);
                 if (rotated) {

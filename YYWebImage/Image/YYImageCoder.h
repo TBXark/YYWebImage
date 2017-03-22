@@ -345,7 +345,7 @@ typedef NS_ENUM(NSUInteger, YYImageBlendOperation) {
  
  @return Image data, or nil if an error occurs.
  */
-- (nullable NSData *)yy_imageDataRepresentation;
+- (nullable NSData *)yy_imageDataRepresentation:(BOOL)containAlpha;
 
 @end
 

@@ -114,10 +114,20 @@ static inline dispatch_queue_t YYImageCacheDecodeQueue() {
 }
 
 - (void)setImage:(UIImage *)image forKey:(NSString *)key {
-    [self setImage:image imageData:nil forKey:key withType:YYImageCacheTypeAll];
+    [self setImage:image imageData:nil forKey:key withType:YYImageCacheTypeAll containAlpha:TRUE];
+
 }
 
 - (void)setImage:(UIImage *)image imageData:(NSData *)imageData forKey:(NSString *)key withType:(YYImageCacheType)type {
+    [self setImage:image imageData:imageData forKey:key withType:type containAlpha:TRUE];
+}
+
+- (void)setImage:(nullable UIImage *)image
+       imageData:(nullable NSData *)imageData
+          forKey:(NSString *)key
+        withType:(YYImageCacheType)type
+    containAlpha:(BOOL)containAlpha {
+
     if (!key || (image == nil && imageData.length == 0)) return;
     
     __weak typeof(self) _self = self;
@@ -151,13 +161,14 @@ static inline dispatch_queue_t YYImageCacheDecodeQueue() {
             dispatch_async(YYImageCacheIOQueue(), ^{
                 __strong typeof(_self) self = _self;
                 if (!self) return;
-                NSData *data = [image yy_imageDataRepresentation];
+                NSData *data = [image yy_imageDataRepresentation: containAlpha];
                 [YYDiskCache setExtendedData:[NSKeyedArchiver archivedDataWithRootObject:@(image.scale)] toObject:data];
                 [self.diskCache setObject:data forKey:key];
             });
         }
     }
 }
+
 
 - (void)removeImageForKey:(NSString *)key {
     [self removeImageForKey:key withType:YYImageCacheTypeAll];

@@ -136,6 +136,12 @@ typedef NS_OPTIONS(NSUInteger, YYImageCacheType) {
           forKey:(NSString *)key
         withType:(YYImageCacheType)type;
 
+- (void)setImage:(nullable UIImage *)image
+       imageData:(nullable NSData *)imageData
+          forKey:(NSString *)key
+        withType:(YYImageCacheType)type
+    containAlpha:(BOOL)containAlpha;
+
 /**
  Removes the image of the specified key in the cache (both memory and disk).
  This method returns immediately and executes the remove operation in background.
